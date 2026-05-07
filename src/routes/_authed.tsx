@@ -25,7 +25,7 @@ function AuthedLayout() {
       setRole(r);
       setReady(true);
     })();
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_e: string, session: unknown) => {
       if (!session) navigate({ to: "/login" });
     });
     return () => {
