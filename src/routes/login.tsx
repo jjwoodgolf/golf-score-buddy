@@ -90,6 +90,7 @@ function LoginPage() {
           {loading ? "Signing in…" : "Sign in"}
         </Button>
       </form>
+      <DevBypass />
     </AuthLayout>
   );
 }
