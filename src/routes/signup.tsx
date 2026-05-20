@@ -127,6 +127,7 @@ function SignupPage() {
           {loading ? "Creating account…" : "Create account"}
         </Button>
       </form>
+      <DevBypass />
     </AuthLayout>
   );
 }
