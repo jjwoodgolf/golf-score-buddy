@@ -1,54 +1,31 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { dashboardPathForRole, getCurrentUserRole } from "@/lib/auth";
+import { ensureDevUser } from "@/lib/dev-bypass.functions";
 import { Button } from "@/components/ui/button";
 
 export function DevBypass() {
   const navigate = useNavigate();
+  const ensure = useServerFn(ensureDevUser);
   const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function bypass(role: "student" | "coach") {
-    const email = `dev-${role}@fairwayiq.com`;
-    const password = "devpassword123";
-    const fullName = `Dev ${role.charAt(0).toUpperCase() + role.slice(1)}`;
-
     setLoading(role);
-
-    // Try sign in first
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-
-    // If user doesn't exist, sign them up then sign in
-    if (signInError?.message?.toLowerCase().includes("invalid login credentials")) {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName, role } },
-      });
-      if (signUpError) {
-        setLoading(null);
-        return;
-      }
-      if (data.user) {
-        await supabase
-          .from("profiles")
-          .upsert(
-            { id: data.user.id, email, full_name: fullName, role },
-            { onConflict: "id" },
-          );
-      }
-      const { error: retryError } = await supabase.auth.signInWithPassword({ email, password });
-      if (retryError) {
-        setLoading(null);
-        return;
-      }
-    } else if (signInError) {
+    setError(null);
+    try {
+      const { email, password } = await ensure({ data: { role } });
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) throw signInError;
+      const currentRole = (await getCurrentUserRole()) ?? role;
+      navigate({ to: dashboardPathForRole(currentRole) });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Dev login failed");
+    } finally {
       setLoading(null);
-      return;
     }
-
-    const currentRole = await getCurrentUserRole();
-    navigate({ to: dashboardPathForRole(currentRole) });
   }
 
   return (
@@ -74,6 +51,7 @@ export function DevBypass() {
           {loading === "coach" ? "Signing in…" : "Coach"}
         </Button>
       </div>
+      {error && <p className="mt-2 text-xs text-destructive text-center">{error}</p>}
     </div>
   );
 }
