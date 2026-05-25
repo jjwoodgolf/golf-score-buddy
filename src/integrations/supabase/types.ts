@@ -254,20 +254,23 @@ export type Database = {
       sg_benchmarks: {
         Row: {
           avg_strokes: number
-          distance_yds: number
+          distance: number
           id: number
+          is_putting: boolean
           lie_type: string
         }
         Insert: {
           avg_strokes: number
-          distance_yds: number
+          distance: number
           id?: number
+          is_putting?: boolean
           lie_type: string
         }
         Update: {
           avg_strokes?: number
-          distance_yds?: number
+          distance?: number
           id?: number
+          is_putting?: boolean
           lie_type?: string
         }
         Relationships: []
@@ -283,6 +286,8 @@ export type Database = {
           id: string
           lie_end: string
           lie_start: string
+          penalty_strokes: number
+          penalty_type: string | null
           sg_category: string | null
           sg_value: number | null
           shot_number: number
@@ -297,6 +302,8 @@ export type Database = {
           id?: string
           lie_end: string
           lie_start: string
+          penalty_strokes?: number
+          penalty_type?: string | null
           sg_category?: string | null
           sg_value?: number | null
           shot_number: number
@@ -311,6 +318,8 @@ export type Database = {
           id?: string
           lie_end?: string
           lie_start?: string
+          penalty_strokes?: number
+          penalty_type?: string | null
           sg_category?: string | null
           sg_value?: number | null
           shot_number?: number
@@ -377,10 +386,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      assign_sg_category: {
-        Args: { p_dist_start: number; p_hole_par: number; p_lie_start: string }
-        Returns: string
-      }
+      assign_sg_category:
+        | {
+            Args: {
+              p_dist_start: number
+              p_hole_par: number
+              p_lie_start: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_dist_start: number
+              p_hole_par: number
+              p_lie_start: string
+            }
+            Returns: string
+          }
       get_my_coach_id: { Args: never; Returns: string }
       get_my_role: { Args: never; Returns: string }
       lookup_benchmark: {
