@@ -17,6 +17,7 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed.dashboard'
 import { Route as AuthedCoachDashboardRouteImport } from './routes/_authed.coach.dashboard'
+import { Route as AuthedCoachCoursesRouteImport } from './routes/_authed.coach.courses'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -57,6 +58,11 @@ const AuthedCoachDashboardRoute = AuthedCoachDashboardRouteImport.update({
   path: '/coach/dashboard',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedCoachCoursesRoute = AuthedCoachCoursesRouteImport.update({
+  id: '/coach/courses',
+  path: '/coach/courses',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/coach/courses': typeof AuthedCoachCoursesRoute
   '/coach/dashboard': typeof AuthedCoachDashboardRoute
 }
 export interface FileRoutesByTo {
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/coach/courses': typeof AuthedCoachCoursesRoute
   '/coach/dashboard': typeof AuthedCoachDashboardRoute
 }
 export interface FileRoutesById {
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
+  '/_authed/coach/courses': typeof AuthedCoachCoursesRoute
   '/_authed/coach/dashboard': typeof AuthedCoachDashboardRoute
 }
 export interface FileRouteTypes {
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/dashboard'
+    | '/coach/courses'
     | '/coach/dashboard'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/dashboard'
+    | '/coach/courses'
     | '/coach/dashboard'
   id:
     | '__root__'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_authed/dashboard'
+    | '/_authed/coach/courses'
     | '/_authed/coach/dashboard'
   fileRoutesById: FileRoutesById
 }
@@ -185,16 +197,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCoachDashboardRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/coach/courses': {
+      id: '/_authed/coach/courses'
+      path: '/coach/courses'
+      fullPath: '/coach/courses'
+      preLoaderRoute: typeof AuthedCoachCoursesRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
 interface AuthedRouteChildren {
   AuthedDashboardRoute: typeof AuthedDashboardRoute
+  AuthedCoachCoursesRoute: typeof AuthedCoachCoursesRoute
   AuthedCoachDashboardRoute: typeof AuthedCoachDashboardRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDashboardRoute: AuthedDashboardRoute,
+  AuthedCoachCoursesRoute: AuthedCoachCoursesRoute,
   AuthedCoachDashboardRoute: AuthedCoachDashboardRoute,
 }
 
