@@ -1,12 +1,19 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getMyRoleServer } from "@/lib/role.functions";
 
 export type Role = "coach" | "student";
 
+// Server-validated role lookup. Uses a TanStack server function so the role
+// check cannot be tampered with by a malicious client.
 export async function getCurrentUserRole(): Promise<Role | null> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  return (data?.role as Role) ?? null;
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return null;
+  try {
+    const { role } = await getMyRoleServer();
+    return role;
+  } catch {
+    return null;
+  }
 }
 
 export function dashboardPathForRole(role: Role | null): string {
